@@ -1,14 +1,38 @@
 {
   "name": "iot24",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A backend server for DeviceHub project (IoT24)",
+  "main": "src/index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.ts",
+    "build": "tsc",
+    "lint": "eslint --fix src test"
   },
-  "author": "",
+  "author": "Iaroslava Goncharova, Eemil Kärkkäinen",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iaroslavagoncharova/iot24"
+  },
   "license": "ISC",
   "devDependencies": {
-    "typescript": "^5.6.2"
+    "@eslint/js": "^9.10.0",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/morgan": "^1.9.9",
+    "eslint": "^9.10.0",
+    "nodemon": "^3.1.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2",
+    "typescript-eslint": "^8.5.0"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "express-validator": "^7.2.0",
+    "helmet": "^7.1.0",
+    "morgan": "^1.10.0"
   }
 }
