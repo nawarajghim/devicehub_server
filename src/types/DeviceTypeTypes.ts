@@ -1,6 +1,6 @@
-type Type = {
+type DeviceType = {
     name: string;
     type: Array<string>;
 }
 
-export {Type};
+export {DeviceType};

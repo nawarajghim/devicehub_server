@@ -1,7 +1,7 @@
 type DeviceData = {
-    deviceId: number;
-    timestamp: string;
-    data: {};
-}
+  deviceId: number;
+  timestamp: Date;
+  data: Record<string, unknown>;
+};
 
-export { DeviceData };
+export {DeviceData};
