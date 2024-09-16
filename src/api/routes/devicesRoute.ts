@@ -1,6 +1,7 @@
 import express from 'express';
 import {
   addDevice,
+  deleteDeviceByName,
   getDeviceByName,
   getDevices,
   getDevicesByLocation,
@@ -23,5 +24,8 @@ router.get('/location/:location', getDevicesByLocation);
 
 // Route to add a new device
 router.post('/', addDevice);
+
+// Route to delete a device by name
+router.delete('/name/:name', deleteDeviceByName);
 
 export default router;

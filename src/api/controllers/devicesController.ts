@@ -119,4 +119,33 @@ const addDevice = async (
     }
 }
 
-export { getDevices, getDeviceByName, getDevicesByType, getDevicesByLocation, addDevice };
+/*********************DELETE requests**********************/
+
+// Function to delete a device by name
+const deleteDeviceByName = async (
+    req: Request<{name: string}>,
+    res: Response<DBMessageResponse | {message: string}>,
+    next: NextFunction
+) => {
+    try {
+        const {name} = req.params;
+        const deleteDevice = await deviceModel.findOneAndDelete({
+            name: name
+        });
+        if (!deleteDevice) {
+            res.status(404).json({
+                message: 'Device not found'
+            });
+            return;
+        }
+        res.json({
+            message: 'Device deleted successfully',
+            data: deleteDevice
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+
+export { getDevices, getDeviceByName, getDevicesByType, getDevicesByLocation, addDevice, deleteDeviceByName };
