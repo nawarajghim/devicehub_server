@@ -13,7 +13,7 @@ const getDeviceDataList = async (
   next: NextFunction
 ) => {
   try {
-    const deviceDataList = await deviceDataModel.find();
+    const deviceDataList = await deviceDataModel.find().select('-__v');
     console.log(deviceDataList);
     res.json(deviceDataList);
   } catch (error) {
@@ -31,7 +31,7 @@ const getDeviceData = async (
     const id = parseInt(req.params.deviceId);
     const deviceData = await deviceDataModel.findOne({
       deviceId: id,
-    });
+    }).select('-__v');
     console.log(id, typeof id);
     if (!deviceData) {
       throw new CustomError('Device data not found', 404);
