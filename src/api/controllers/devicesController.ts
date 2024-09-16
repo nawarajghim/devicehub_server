@@ -147,5 +147,35 @@ const deleteDeviceByName = async (
     }
 }
 
+/*********************PUT requests**********************/
 
-export { getDevices, getDeviceByName, getDevicesByType, getDevicesByLocation, addDevice, deleteDeviceByName };
+// Function to update a device by name
+const updateDeviceByName = async (
+    req: Request<{name: string}>,
+    res: Response<DBMessageResponse | {message: string}>,
+    next: NextFunction
+) => {
+    try {
+        const {name} = req.params;
+        const updateDevice = await deviceModel.findOneAndUpdate({
+            name: name
+        }, req.body, {
+            new: true
+        })
+        if (!updateDevice) {
+            res.status(404).json({
+                message: 'Device not found'
+            });
+            return;
+        }
+        res.json({
+            message: 'Device updated successfully',
+            data: updateDevice
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+
+export { getDevices, getDeviceByName, getDevicesByType, getDevicesByLocation, addDevice, deleteDeviceByName, updateDeviceByName };
