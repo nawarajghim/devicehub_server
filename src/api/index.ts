@@ -1,6 +1,6 @@
 import express from 'express';
 import devicesRoute from './routes/devicesRoute';
-import {MessageResponse} from '../types/MessageTypes';
+import { MessageResponse } from '../types/MessageTypes';
 
 const router = express.Router();
 
@@ -10,8 +10,7 @@ router.get<{}, MessageResponse>('/', (_req, res) => {
   });
 });
 
+// Mount the devices routes
 router.use('/devices', devicesRoute);
-router.use('/devices/:name', devicesRoute);
-router.use('/devices/:type', devicesRoute);
 
 export default router;
