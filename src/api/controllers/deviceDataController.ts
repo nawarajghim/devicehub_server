@@ -62,4 +62,59 @@ const postDeviceData = async (
   }
 };
 
-export {getDeviceData, getDeviceDataList, postDeviceData};
+// update device data
+const putDeviceData = async (
+  req: Request<{deviceId: string}, {}, DeviceData>,
+  res: Response<DBMessageResponse>,
+  next: NextFunction
+) => {
+  try {
+    const id = parseInt(req.params.deviceId);
+    const deviceData = await deviceDataModel.findOne({
+      deviceId: id,
+    });
+    if (!deviceData) {
+      throw new CustomError('Device data not found', 404);
+    }
+    deviceData.data = req.body.data;
+    const updatedDeviceData = await deviceData.save();
+    res.json({
+      message: 'Device data updated',
+      data: updatedDeviceData,
+    });
+  } catch (error) {
+    next(new CustomError((error as Error).message, 500));
+  }
+};
+
+// delete device data
+const deleteDeviceData = async (
+  req: Request<{deviceId: string}>,
+  res: Response<DBMessageResponse>,
+  next: NextFunction
+) => {
+  try {
+    const id = parseInt(req.params.deviceId);
+    const deviceData = await deviceDataModel.findOne({
+      deviceId: id,
+    });
+    if (!deviceData) {
+      throw new CustomError('Device data not found', 404);
+    }
+    await deviceDataModel.deleteOne({deviceId: id});
+    res.json({
+      message: 'Device data deleted',
+      data: deviceData,
+    });
+  } catch (error) {
+    next(new CustomError((error as Error).message, 500));
+  }
+};
+
+export {
+  getDeviceData,
+  getDeviceDataList,
+  postDeviceData,
+  putDeviceData,
+  deleteDeviceData,
+};
