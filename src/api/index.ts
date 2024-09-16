@@ -12,5 +12,6 @@ router.get<{}, MessageResponse>('/', (_req, res) => {
 
 router.use('/devices', devicesRoute);
 router.use('/devices/:name', devicesRoute);
+router.use('/devices/:type', devicesRoute);
 
 export default router;

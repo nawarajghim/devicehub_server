@@ -39,5 +39,27 @@ const getDeviceByName = async (
     }
 }
 
+const getDevicesByType = async (
+    req: Request<{type: string}>,
+    res: Response<Device[] | {message: string}>,
+    next: NextFunction
+) => {
+    try {
+        const {type} = req.params;
+        const devices = await deviceModel.find({
+            type: type
+        })
+        if (!devices) {
+            res.status(404).json({
+                message: 'Device not found'
+            });
+            return;
+        }
+    } catch (error) {
+        next(error);
+    }
+    
+}
 
-export { getDevices, getDeviceByName };
+
+export { getDevices, getDeviceByName, getDevicesByType };
