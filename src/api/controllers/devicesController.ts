@@ -51,16 +51,16 @@ const getDeviceByName = async (
 }
 
 
-// Function to get devices by type
+// Function to get devices by deviceType
 const getDevicesByType = async (
-    req: Request<{type: string}>,
+    req: Request<{deviceType: string}>,
     res: Response<Device[] | {message: string}>,
     next: NextFunction
 ) => {
     try {
-        const {type} = req.params;
+        const {deviceType} = req.params;
         const devices = await deviceModel.find({
-            type: type
+            deviceType: deviceType
         })
         if (!devices) {
             res.status(404).json({
@@ -151,18 +151,16 @@ const deleteDeviceByName = async (
 
 // Function to update a device by name
 const updateDeviceByName = async (
-    req: Request<{name: string}>,
+    req: Request<{name: string}, {}, Device>,
     res: Response<DBMessageResponse | {message: string}>,
     next: NextFunction
 ) => {
     try {
         const {name} = req.params;
-        const updateDevice = await deviceModel.findOneAndUpdate({
+        const updatedDevice = await deviceModel.findOneAndUpdate({
             name: name
-        }, req.body, {
-            new: true
-        })
-        if (!updateDevice) {
+        }, req.body, {new: true});
+        if (!updatedDevice) {
             res.status(404).json({
                 message: 'Device not found'
             });
@@ -170,7 +168,7 @@ const updateDeviceByName = async (
         }
         res.json({
             message: 'Device updated successfully',
-            data: updateDevice
+            data: updatedDevice
         });
     } catch (error) {
         next(error);

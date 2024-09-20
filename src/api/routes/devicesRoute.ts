@@ -18,7 +18,7 @@ router.get('/', getDevices);
 router.get('/name/:name', getDeviceByName);
 
 // Route to get devices by type
-router.get('/type/:type', getDevicesByType);
+router.get('/deviceType/:deviceType', getDevicesByType);
 
 // Route to get devices by location
 router.get('/location/:location', getDevicesByLocation);
