@@ -1,6 +1,6 @@
 type Device = {
     name: string;
-    type: string;
+    class: string;
     location?: string;
     settings?: string;
 }
