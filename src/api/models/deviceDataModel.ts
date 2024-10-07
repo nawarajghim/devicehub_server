@@ -4,7 +4,7 @@ import {DeviceData} from '../../types/DeviceData';
 const deviceDataSchema = new Schema<DeviceData>(
   {
     deviceId: {type: Number, required: true},
-    timestamp: {type: Date, required: true},
+    timestamp: {type: Date, required: true, default: Date.now},
     data: {type: Schema.Types.Mixed, required: true},
   },
   {collection: 'deviceData'}

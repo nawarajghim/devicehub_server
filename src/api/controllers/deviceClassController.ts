@@ -55,7 +55,7 @@ const postDeviceClass = async (
     const deviceClass = new deviceClassModel(req.body);
     // name should be only one word, dash-separation is allowed
     if (deviceClass.name.split(' ').length > 1) {
-      throw new CustomError('Name should be one word', 400);
+      throw new CustomError('Name should be one word, try dash-separation', 400);
     }
     // if the first letter is lowercase, capitalize it
     deviceClass.name =
@@ -77,6 +77,10 @@ const putDeviceClass = async (
   next: NextFunction
 ) => {
   try {
+    // name should be only one word, dash-separation is allowed
+    if (req.body.name.split(' ').length > 1) {
+      throw new CustomError('Name should be one word, try dash-separation', 400);
+    }
     // if the first letter is lowercase, capitalize it
     req.params.name =
       req.params.name.charAt(0).toUpperCase() + req.params.name.slice(1);
