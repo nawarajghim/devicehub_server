@@ -6,6 +6,7 @@ import {
   getDevices,
   getDevicesByLocation,
   getDevicesByType,
+  getDevicesByClass,
   updateDeviceByName,
 } from '../controllers/devicesController';
 
@@ -16,6 +17,9 @@ router.get('/', getDevices);
 
 // Route to get a device by name
 router.get('/name/:name', getDeviceByName);
+
+// Route to get devices by class
+router.get('/class/:class', getDevicesByClass);
 
 // Route to get devices by type
 router.get('/deviceType/:deviceType', getDevicesByType);

@@ -4,6 +4,7 @@ type Device = {
     deviceType: string;
     location?: string;
     settings?: string;
+    status: string;
 }
 
 export {Device};
