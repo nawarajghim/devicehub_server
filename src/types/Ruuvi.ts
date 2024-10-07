@@ -14,6 +14,7 @@ type Ruuvi = {
     measurement_sequence_number: number;
     mac: string;
     rssi: number | null;
+    date: Date;
   };
 };
 

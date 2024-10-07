@@ -53,6 +53,13 @@ const postDeviceClass = async (
 ) => {
   try {
     const deviceClass = new deviceClassModel(req.body);
+    // name should be only one word, dash-separation is allowed
+    if (deviceClass.name.split(' ').length > 1) {
+      throw new CustomError('Name should be one word', 400);
+    }
+    // if the first letter is lowercase, capitalize it
+    deviceClass.name =
+      deviceClass.name.charAt(0).toUpperCase() + deviceClass.name.slice(1);
     const newDeviceClass = await deviceClass.save();
     res.status(201).json({
       message: 'Device class added',
