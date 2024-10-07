@@ -140,6 +140,9 @@ const addDevice = async (
         400
       );
     }
+    // if first letter is lowercase, make it uppercase
+    newDevice.name =
+      newDevice.name.charAt(0).toUpperCase() + newDevice.name.slice(1);
     const savedDevice = await newDevice.save();
 
     res.status(201).json({
@@ -161,8 +164,9 @@ const deleteDeviceByName = async (
 ) => {
   try {
     const {name} = req.params;
+    // make the name case insensitive
     const deleteDevice = await deviceModel.findOneAndDelete({
-      name: name,
+      name: {$regex: new RegExp(name, 'i')},
     });
     if (!deleteDevice) {
       res.status(404).json({
@@ -189,16 +193,22 @@ const updateDeviceByName = async (
 ) => {
   try {
     const {name} = req.params;
+    // if updating name, make sure it's one word
     // name can only be one word, dash-separation is allowed
-    if (req.body.name.split(' ').length > 1) {
-      throw new CustomError(
-        'Name should be one word, try dash-separation',
-        400
-      );
+    if (req.body.name) {
+      if (req.body.name.split(' ').length > 1) {
+        throw new CustomError(
+          'Name should be one word, try dash-separation',
+          400
+        );
+      }
+      // if first letter is lowercase, make it uppercase
+      req.body.name =
+        req.body.name.charAt(0).toUpperCase() + req.body.name.slice(1);
     }
     const updatedDevice = await deviceModel.findOneAndUpdate(
       {
-        name: name,
+        name: {$regex: new RegExp(name, 'i')},
       },
       req.body,
       {new: true}
