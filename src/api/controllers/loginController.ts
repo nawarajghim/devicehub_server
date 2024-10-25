@@ -25,6 +25,25 @@ const getAdmin = async (
   }
 };
 
+// get user role by token
+const getUserRole = async (
+  req: Request,
+  res: Response<string>,
+  next: NextFunction
+) => {
+  try {
+    const token = req.header('Authorization')?.split(' ')[1];
+    if (!token) {
+      return next(new Error('No token, authorization denied'));
+    }
+    const decoded = jwt.verify(token, JWT_SECRET as string);
+    // if the token is valid, return the role
+    res.json((decoded as {role: string}).role);
+  } catch (error) {
+    next(error);
+  }
+};
+
 // login
 const login = async (
   req: Request<{}, {}, Admin>,
@@ -34,29 +53,26 @@ const login = async (
   try {
     const {username, password} = req.body;
 
-    // Find admin by username and retrieve password, role, and username fields
+    // find the admin
     const admin = await adminModel
       .findOne({username})
       .select('password role username');
 
-    // If no matching admin found, throw error
     if (!admin) {
       return next(new Error('Invalid username or password'));
     }
 
-    // Compare the entered password with the hashed password from the database
     const validPassword = await bcrypt.compare(password, admin.password);
     if (!validPassword) {
       return next(new Error('Invalid username or password'));
     }
 
-    // Create a JWT token with the admin's username and role
+    // creating token
     const token = jwt.sign(
       {id: admin.id, username: admin.username, role: admin.role},
       JWT_SECRET as string
     );
 
-    // Respond with success message and admin data (excluding the password)
     res.json({
       message: 'Login successful',
       data: {
@@ -70,4 +86,37 @@ const login = async (
   }
 };
 
-export {login, getAdmin};
+const postNewPassword = async (
+  req: Request<{}, {}, Admin>,
+  res: Response<MessageResponse>,
+  next: NextFunction
+) => {
+  try {
+    const {password} = req.body;
+
+    const token = req.header('Authorization')?.split(' ')[1];
+
+    if (!token) {
+      return next(new Error('No token, authorization denied'));
+    }
+
+    const decoded = jwt.verify(token, JWT_SECRET as string);
+    const admin = await adminModel.findById((decoded as {id: string}).id);
+
+    if (!admin) {
+      return next(new Error('Admin not found'));
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    admin.password = hashedPassword;
+    await admin.save();
+
+    res.json({
+      message: 'Password updated',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export {login, getAdmin, getUserRole, postNewPassword};
