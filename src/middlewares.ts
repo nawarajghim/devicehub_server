@@ -3,6 +3,7 @@ import {NextFunction, Request, Response} from 'express';
 import {ErrorResponse} from './types/MessageTypes';
 import CustomError from './classes/CustomError';
 import {FieldValidationError, validationResult} from 'express-validator';
+import jwt from 'jsonwebtoken';
 
 const notFound = (req: Request, _res: Response, next: NextFunction) => {
   const error = new CustomError(`🔍 - Not Found - ${req.originalUrl}`, 404);
@@ -37,4 +38,19 @@ const validate = (req: Request, _res: Response, next: NextFunction) => {
   next();
 };
 
-export {notFound, errorHandler, validate};
+const authenticate = (req: Request, res: Response, next: NextFunction) => {
+  // Authorization: Bearer token
+  const token = req.header('Authorization')?.split(' ')[1];
+  if (!token) {
+    return res.status(401).json({msg: 'No token, authorization denied'});
+  }
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+    req.body.user = decoded;
+    next();
+  } catch (e) {
+    res.status(400).json({msg: 'Token is not valid'});
+  }
+};
+
+export {notFound, errorHandler, validate, authenticate};
