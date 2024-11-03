@@ -17,6 +17,7 @@ const ruuviSchema = new Schema({
     measurement_sequence_number: {type: Number, required: true},
     mac: {type: String, required: true},
     rssi: {type: Number, required: false},
-  }
+  },
+  timestamp: {type: Date, default: Date.now},
 });
 export default model<Ruuvi>('Ruuvi', ruuviSchema);
