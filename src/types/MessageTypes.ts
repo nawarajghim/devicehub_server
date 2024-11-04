@@ -6,4 +6,8 @@ type ErrorResponse = MessageResponse & {
   stack?: string;
 };
 
-export {MessageResponse, ErrorResponse};
+type RoleResponse = MessageResponse & {
+  data: {role: string};
+};
+
+export {MessageResponse, ErrorResponse, RoleResponse};

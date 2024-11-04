@@ -1,7 +1,7 @@
 import {NextFunction, Request, Response} from 'express';
 import adminModel from '../models/adminModel';
 import {Admin} from '../../types/Admin';
-import {MessageResponse} from '../../types/MessageTypes';
+import {MessageResponse, RoleResponse} from '../../types/MessageTypes';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
@@ -27,8 +27,8 @@ const getAdmin = async (
 
 // get user role by token
 const getUserRole = async (
-  req: Request,
-  res: Response<string>,
+  req: Request<{}, {}, Admin>,
+  res: Response<RoleResponse>,
   next: NextFunction
 ) => {
   try {
@@ -38,7 +38,12 @@ const getUserRole = async (
     }
     const decoded = jwt.verify(token, JWT_SECRET as string);
     // if the token is valid, return the role
-    res.json((decoded as {role: string}).role);
+    res.json({
+      message: 'Role found',
+      data: {
+        role: (decoded as {role: string}).role,
+      },
+    });
   } catch (error) {
     next(error);
   }
