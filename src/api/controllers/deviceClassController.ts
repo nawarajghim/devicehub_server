@@ -45,33 +45,6 @@ const getDeviceClassByName = async (
   }
 };
 
-// get types of devices by device class
-const getTypesByClass = async (
-  req: Request<{deviceClass: string}>,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    // if the first letter is lowercase, capitalize it
-    req.params.deviceClass =
-      req.params.deviceClass.charAt(0).toUpperCase() +
-      req.params.deviceClass.slice(1);
-    console.log(req.params.deviceClass);
-    const types = await deviceClassModel
-    .findOne({
-      name: req.params.deviceClass,
-    })
-    .select('type -_id');
-    if (!types) {
-      throw new CustomError('Device class not found', 404);
-    }
-    console.log(types);
-    res.json(types.type);
-  } catch (error) {
-    next(new CustomError((error as Error).message, 500));
-  }
-};
-
 // post a device class
 const postDeviceClass = async (
   req: Request<{}, {}, DeviceClass>,
@@ -162,7 +135,6 @@ const deleteDeviceClass = async (
 export {
   getDeviceClasses,
   getDeviceClassByName,
-  getTypesByClass,
   postDeviceClass,
   putDeviceClass,
   deleteDeviceClass,

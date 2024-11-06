@@ -3,7 +3,6 @@ import {
   deleteDeviceClass,
   getDeviceClassByName,
   getDeviceClasses,
-  getTypesByClass,
   postDeviceClass,
   putDeviceClass,
 } from '../controllers/deviceClassController';
@@ -16,7 +15,5 @@ router
   .get(getDeviceClassByName)
   .put(putDeviceClass)
   .delete(deleteDeviceClass);
-
-router.get('/types/:deviceClass', getTypesByClass);
 
 export default router;
