@@ -132,7 +132,7 @@ const addDevice = async (
   try {
     const newDevice = new deviceModel(req.body);
     // new device's status is always 'active'
-    newDevice.status = 'active';
+    newDevice.status = 'Active';
     // name can only be one word, dash-separation is allowed
     if (newDevice.name.split(' ').length > 1) {
       throw new CustomError(
