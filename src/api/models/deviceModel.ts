@@ -9,6 +9,8 @@ const deviceSchema = new Schema<Device>({
     location: { type: String, required: false},
     settings: { type: String, required: false},
     status: { type: String, required: true},
+    data: { type: Object, required: false},
+    last_updated: { type: Date, required: false}
 })
 
 export default model<Device>('Device', deviceSchema);
