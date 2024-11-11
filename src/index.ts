@@ -15,46 +15,71 @@ const port = process.env.PORT || 3000;
       console.log(`Listening: http://localhost:${port}`);
     });
 
-    const wss = new WebSocket.Server({server});
-
-    wss.on('connection', (ws) => {
-      console.log('Client connected');
-
-      ws.on('close', () => {
-        console.log('Client disconnected');
-      });
-    });
+    let wss: WebSocket.Server;
+    try {
+      wss = new WebSocket.Server({server});
+      console.log('WebSocket server initialized');
+    } catch (error) {
+      console.error('WebSocket server error', (error as Error).message);
+      return;
+    }
 
     function broadcast(data: object) {
+      if (!wss) return;
       console.log('Broadcasting data:', data);
       wss.clients.forEach((client) => {
         if (client.readyState === WebSocket.OPEN) {
-          client.send(JSON.stringify(data));
+          try {
+            client.send(JSON.stringify(data));
+          } catch (error) {
+            console.error('Error broadcasting data', (error as Error).message);
+          }
         }
       });
     }
 
-    const changeStream = deviceModel.collection.watch([], {
-      fullDocument: 'updateLookup',
+    wss.on('connection', (ws) => {
+      console.log('WebSocket client connected');
+      ws.on('close', () => {
+        console.log('WebSocket client disconnected');
+      });
+      ws.on('error', (error) => {
+        console.error('WebSocket error', (error as Error).message);
+      });
     });
 
-    changeStream.on('change', (change) => {
-      if (change.operationType === 'update') {
-        const updatedData =
-          change.fullDocument?.data ||
-          change.updateDescription.updatedFields?.data;
+    function startChangeStream() {
+      const changeStream = deviceModel.collection.watch([], {
+        fullDocument: 'updateLookup',
+      });
 
-        if (wss.clients.size > 0 && updatedData) {
-          broadcast({
-            data: updatedData,
-            last_updated: new Date(),
-          });
+      changeStream.on('change', (change) => {
+        if (change.operationType === 'update') {
+          const updatedData =
+            change.fullDocument?.data ||
+            change.updateDescription.updatedFields?.data;
+
+          if (wss && wss.clients.size > 0 && updatedData) {
+            broadcast({
+              data: updatedData,
+              last_updated: new Date(),
+            });
+          }
         }
-      }
-    });
+      });
+
+      changeStream.on('error', (error) => {
+        console.error('Change stream error', (error as Error).message);
+        changeStream.close();
+        setTimeout(startChangeStream, 1000);
+      });
+    }
+
+    startChangeStream();
 
     console.log('WebSocket server and MongoDB change stream initialized');
   } catch (error) {
     console.error('Server error', (error as Error).message);
   }
 })();
+
