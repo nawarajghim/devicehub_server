@@ -34,32 +34,21 @@ const port = process.env.PORT || 3000;
       });
     }
 
-    // Watch for changes and include the full document in the change stream
     const changeStream = deviceModel.collection.watch([], {
       fullDocument: 'updateLookup',
     });
 
     changeStream.on('change', (change) => {
-      console.log('Change detected:', change);
-
-      // Check if the change is an update operation
       if (change.operationType === 'update') {
-        console.log('Change type:', change.operationType);
-
-        // Access updated fields or full document (based on configuration)
         const updatedData =
           change.fullDocument?.data ||
           change.updateDescription.updatedFields?.data;
-        console.log('Updated data:', updatedData);
-
-        // check if client is connected and then broadcast the updated data
 
         if (wss.clients.size > 0 && updatedData) {
           broadcast({
             data: updatedData,
             last_updated: new Date(),
           });
-          console.log('Broadcasted updated data:', updatedData);
         }
       }
     });
