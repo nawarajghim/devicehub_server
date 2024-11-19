@@ -2,6 +2,7 @@ import {NextFunction, Request, Response} from 'express';
 import ruuviModel from '../models/ruuviModel';
 import {Ruuvi} from '../../types/Ruuvi';
 import {MessageResponse} from '../../types/MessageTypes';
+import CustomError from '../../classes/CustomError';
 
 type DBMessageResponse = MessageResponse & {
   data: Ruuvi;
@@ -15,8 +16,8 @@ const getRuuviData = async (
   try {
     const ruuviData = await ruuviModel.find();
     res.json(ruuviData);
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    next(new CustomError((err as Error).message, 500));
   }
 };
 
@@ -34,7 +35,7 @@ const postRuuviData = async (
       data: savedRuuvi,
     });
   } catch (error) {
-    next(error);
+    next(new CustomError((error as Error).message, 500));
   }
 };
 

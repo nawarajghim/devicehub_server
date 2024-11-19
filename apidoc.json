@@ -1,0 +1,13 @@
+{
+    "name": "DeviceHub server",
+    "version": "1.0.0",
+    "description": "For IoT-device control panel project with Nokia",
+    "title": "Authentication server",
+    "url": "/api/v1",
+    "template": {
+      "withCompare": true,
+      "withGenerator": true
+    },
+    "exclude": ["node_modules/, public/"],
+    "files": ["src/**/*.ts"]
+  }

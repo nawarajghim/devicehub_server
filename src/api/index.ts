@@ -5,6 +5,7 @@ import ruuviDataRoute from './routes/ruuviDataRoute';
 import devicesRoute from './routes/devicesRoute';
 import loginRoute from './routes/loginRoute';
 import {MessageResponse} from '../types/MessageTypes';
+
 const router = express.Router();
 
 router.get<{}, MessageResponse>('/', (_req, res) => {
@@ -12,6 +13,7 @@ router.get<{}, MessageResponse>('/', (_req, res) => {
     message: 'API location: api/v1',
   });
 });
+
 router.use('/devices', devicesRoute);
 router.use('/devicedata', deviceDataRoute);
 router.use('/deviceclasses', deviceClassRoute);
