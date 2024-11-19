@@ -31,7 +31,7 @@ router
    *  }
    * ]
    *
-   * @apiError (Error 500) InternalServerError There was an issue getting the Ruuvi data
+   * @apiError (Error 500) InternalServerError Server error
    * @apiErrorExample {json} Error-Response:
    * HTTP/1.1 500 Internal Server Error
    * {
@@ -45,12 +45,22 @@ router
    * @apiName PostRuuviData
    * @apiGroup Ruuvi
    * @apiVersion 1.0.0
-   * @apiParam {Number} humidity Humidity in percentage
-   * @apiParam {Number} temperature Temperature in Celsius
-   * @apiParam {Number} pressure Pressure in hPa
-   * @apiParam {String} mac MAC address of the RuuviTag
-   * @apiParam {Date} timestamp Timestamp of the data
-   *
+   * @apiBody {Object} data Ruuvi data object
+   * @apiBody {Number} data.humidity Humidity in percentage
+   * @apiBody {Number} data.temperature Temperature in Celsius
+   * @apiBody {Number} data.pressure Pressure in hPa
+   * @apiBody {String} data.mac MAC address of the RuuviTag
+   * @apiBody {Date} timestamp Timestamp of the data
+   * @apiParamExample {json} Request-Example:
+   * {
+   *  "data": {
+   *           "humidity": 50,
+   *           "temperature": 20,
+   *           "pressure": 1000,
+   *           "mac": "AA
+   *           },
+   *  "timestamp": "2021-01-01T12:00:00.000Z"
+   * }
    * @apiSuccess {String} message Ruuvi data saved
    * @apiSuccess {Object} data Ruuvi data object
    * @apiSuccess {Number} data.humidity Humidity in percentage

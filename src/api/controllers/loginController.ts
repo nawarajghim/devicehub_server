@@ -4,6 +4,7 @@ import {Admin} from '../../types/Admin';
 import {MessageResponse, RoleResponse} from '../../types/MessageTypes';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import CustomError from '../../classes/CustomError';
 
 type DBMessageResponse = MessageResponse & {
   data: {username: string; role: string; token: string};
@@ -45,7 +46,7 @@ const getUserRole = async (
       },
     });
   } catch (error) {
-    next(error);
+    next(new CustomError((error as Error).message, 500));
   }
 };
 
@@ -87,7 +88,7 @@ const login = async (
       },
     });
   } catch (error) {
-    next(error);
+    next(new CustomError((error as Error).message, 500));
   }
 };
 
@@ -120,7 +121,7 @@ const postNewPassword = async (
       message: 'Password updated',
     });
   } catch (error) {
-    next(error);
+    next(new CustomError((error as Error).message, 500));
   }
 };
 
