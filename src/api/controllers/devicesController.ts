@@ -150,7 +150,7 @@ const addDevice = async (
       data: savedDevice,
     });
   } catch (error) {
-    next(error);
+    next(new CustomError((error as Error).message, 500));
   }
 };
 
