@@ -8,6 +8,9 @@ import {
   getDevicesByType,
   getDevicesByClass,
   updateDeviceByName,
+  updateDeviceById,
+  getDeviceById,
+  updateDataField,
 } from '../controllers/devicesController';
 
 const router = express.Router();
@@ -17,7 +20,7 @@ const router = express.Router();
  * @apiName GetDevices
  * @apiGroup Devices
  * @apiVersion 1.0.0
- * 
+ *
  * @apiSuccess {Object[]} data Array of device objects
  * @apiSuccess {String} data._id Id of the device
  * @apiSuccess {String} data.name Name of the device
@@ -30,7 +33,7 @@ const router = express.Router();
  * @apiSuccess {String} data.data.key Key of the data object
  * @apiSuccess {String} data.data.value Value of the data object
  * @apiSuccess {Date} data.last_updated Last updated date
- * 
+ *
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
  * [
@@ -50,15 +53,15 @@ const router = express.Router();
  * "last_updated": "2024-11-21T11:54:07.914+00:00"
  * }
  * ]
- *  
+ *
  * @apiError (Error 500) InternalServerError Server error
  * @apiErrorExample {json} Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {
  * "message": "Server error"
  * }
- * 
- * 
+ *
+ *
  */
 
 // Route to get all devices
@@ -69,9 +72,9 @@ router.get('/', getDevices);
  * @apiName GetDeviceByName
  * @apiGroup Devices
  * @apiVersion 1.0.0
- * 
+ *
  * @apiParam {String} name Name of the device
- * 
+ *
  * @apiSuccess {String} _id Id of the device
  * @apiSuccess {String} name Name of the device
  * @apiSuccess {String} deviceClass Class of the device
@@ -83,7 +86,7 @@ router.get('/', getDevices);
  * @apiSuccess {String} data.key Key of the data object
  * @apiSuccess {String} data.value Value of the data object
  * @apiSuccess {Date} last_updated Last updated date
- * 
+ *
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
  * {
@@ -101,14 +104,14 @@ router.get('/', getDevices);
  * },
  * "last_updated": "2024-11-21T11:54:07.914+00:00"
  * }
- * 
+ *
  * @apiError (Error 404) NotFound Device not found
  * @apiErrorExample {json} Error-Response:
  * HTTP/1.1 404 Not Found
  * {
  * "message": "Device not found"
  * }
- * 
+ *
  * @apiError (Error 500) InternalServerError Server error
  * @apiErrorExample {json} Error-Response:
  * HTTP/1.1 500 Internal Server Error
@@ -120,14 +123,20 @@ router.get('/', getDevices);
 // Route to get a device by name
 router.get('/name/:name', getDeviceByName);
 
+router.get('/:id', getDeviceById);
+
+router.put('/:id', updateDeviceById);
+
+router.put('/recent/:id', updateDataField);
+
 /**
  * @api {get} /devices/class/:class Get devices by class
  * @apiName GetDevicesByClass
  * @apiGroup Devices
  * @apiVersion 1.0.0
- * 
+ *
  * @apiParam {String} class Class of the device
- * 
+ *
  * @apiSuccess {Object[]} data Array of device objects
  * @apiSuccess {String} data._id Id of the device
  * @apiSuccess {String} data.name Name of the device
@@ -140,7 +149,7 @@ router.get('/name/:name', getDeviceByName);
  * @apiSuccess {String} data.data.key Key of the data object
  * @apiSuccess {String} data.data.value Value of the data object
  * @apiSuccess {Date} data.last_updated Last updated date
- * 
+ *
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
  * [
@@ -160,14 +169,14 @@ router.get('/name/:name', getDeviceByName);
  * "last_updated": "2024-11-21T11:54:07.914+00:00"
  * }
  * ]
- * 
+ *
  * @apiError (Error 404) NotFound Device not found
  * @apiErrorExample {json} Error-Response:
  * HTTP/1.1 404 Not Found
  * {
  * "message": "Device not found"
  * }
- * 
+ *
  * @apiError (Error 500) InternalServerError Server error
  * @apiErrorExample {json} Error-Response:
  * HTTP/1.1 500 Internal Server Error
@@ -184,9 +193,9 @@ router.get('/class/:class', getDevicesByClass);
  * @apiName GetDevicesByType
  * @apiGroup Devices
  * @apiVersion 1.0.0
- * 
+ *
  * @apiParam {String} deviceType Type of the device
- * 
+ *
  * @apiSuccess {Object[]} data Array of device objects
  * @apiSuccess {String} data._id Id of the device
  * @apiSuccess {String} data.name Name of the device
@@ -199,7 +208,7 @@ router.get('/class/:class', getDevicesByClass);
  * @apiSuccess {String} data.data.key Key of the data object
  * @apiSuccess {String} data.data.value Value of the data object
  * @apiSuccess {Date} data.last_updated Last updated date
- * 
+ *
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
  * [
@@ -219,21 +228,21 @@ router.get('/class/:class', getDevicesByClass);
  * "last_updated": "2024-11-21T11:54:07.914+00:00"
  * }
  * ]
- * 
+ *
  * @apiError (Error 404) NotFound Device not found
  * @apiErrorExample {json} Error-Response:
  * HTTP/1.1 404 Not Found
  * {
  * "message": "Device not found"
  * }
- * 
+ *
  * @apiError (Error 500) InternalServerError Server error
  * @apiErrorExample {json} Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {
  * "message": "Server error"
  * }
- * 
+ *
  */
 
 // Route to get devices by type
@@ -244,9 +253,9 @@ router.get('/deviceType/:deviceType', getDevicesByType);
  * @apiName GetDevicesByLocation
  * @apiGroup Devices
  * @apiVersion 1.0.0
- * 
+ *
  * @apiParam {String} location Location of the device
- * 
+ *
  * @apiSuccess {Object[]} data Array of device objects
  * @apiSuccess {String} data._id Id of the device
  * @apiSuccess {String} data.name Name of the device
@@ -259,7 +268,7 @@ router.get('/deviceType/:deviceType', getDevicesByType);
  * @apiSuccess {String} data.data.key Key of the data object
  * @apiSuccess {String} data.data.value Value of the data object
  * @apiSuccess {Date} data.last_updated Last updated date
- * 
+ *
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
  * [
@@ -279,14 +288,14 @@ router.get('/deviceType/:deviceType', getDevicesByType);
  * "last_updated": "2024-11-21T11:54:07.914+00:00"
  * }
  * ]
- * 
+ *
  * @apiError (Error 404) NotFound Device not found
  * @apiErrorExample {json} Error-Response:
  * HTTP/1.1 404 Not Found
  * {
  * "message": "Device not found"
  * }
- * 
+ *
  * @apiError (Error 500) InternalServerError Server error
  * @apiErrorExample {json} Error-Response:
  * HTTP/1.1 500 Internal Server Error
@@ -303,7 +312,7 @@ router.get('/location/:location', getDevicesByLocation);
  * @apiName AddDevice
  * @apiGroup Devices
  * @apiVersion 1.0.0
- * 
+ *
  * @apiParam {String} name Name of the device
  * @apiParam {String} deviceClass Class of the device
  * @apiParam {String} deviceType Type of the device
@@ -312,7 +321,7 @@ router.get('/location/:location', getDevicesByLocation);
  * @apiParam {String} _id Id of the device
  * @apiParam {String} status Status of the device
  * @apiParam {Number} __v Version of the device
- * 
+ *
  * @apiSuccess {String} message Success message
  * @apiSuccess {Object} data Data object
  * @apiSuccess {String} data.name Name of the device
@@ -323,7 +332,7 @@ router.get('/location/:location', getDevicesByLocation);
  * @apiSuccess {String} data._id Id of the device
  * @apiSuccess {String} data.status Status of the device
  * @apiSuccess {Number} data.__v Version of the device
- * 
+ *
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 201 OK
  * {
@@ -339,15 +348,15 @@ router.get('/location/:location', getDevicesByLocation);
  * "__v": 0
  * }
  * }
- * 
+ *
  * @apiError (Error 500) InternalServerError Server error
  * @apiErrorExample {json} Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {
  * "message": "Server error"
  * }
- * 
- * 
+ *
+ *
  */
 
 // Route to add a new device
@@ -358,9 +367,9 @@ router.post('/', addDevice);
  * @apiName DeleteDeviceByName
  * @apiGroup Devices
  * @apiVersion 1.0.0
- * 
+ *
  * @apiParam {String} name Name of the device
- * 
+ *
  * @apiSuccess {String} message Success message
  * @apiSuccess {Object} data Data object
  * @apiSuccess {String} data._id Id of the device
@@ -371,7 +380,7 @@ router.post('/', addDevice);
  * @apiSuccess {String} data.settings Settings of the device
  * @apiSuccess {String} data.status Status of the device
  * @apiSuccess {Number} data.__v Version of the device
- * 
+ *
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
  * {
@@ -387,19 +396,19 @@ router.post('/', addDevice);
  * "__v": 0
  * }
  * }
- * 
+ *
  * @apiError (Error 404) NotFound Device not found
  * @apiErrorExample {json} Error-Response:
  * HTTP/1.1 404 Not Found
  * {
  * "message": "Device not found"
  * }
- * 
+ *
  * @apiError (Error 500) InternalServerError Server error
  * @apiErrorExample {json} Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {
- * 
+ *
  * "message": "Server error"
  * }
  */
@@ -407,18 +416,18 @@ router.post('/', addDevice);
 // Route to delete a device by name
 router.delete('/name/:name', deleteDeviceByName);
 
-/** 
+/**
  * @api {put} /devices/name/:name Update device by name
  * @apiName UpdateDeviceByName
  * @apiGroup Devices
  * @apiVersion 1.0.0
- * 
+ *
  * @apiParam {String} name Name of the device
  * @apiParam {String} deviceClass Class of the device
  * @apiParam {String} deviceType Type of the device
  * @apiParam {String} location Location of the device
  * @apiParam {String} settings Settings of the device
- * 
+ *
  * @apiSuccess {String} message Success message
  * @apiSuccess {Object} data Data object
  * @apiSuccess {String} data._id Id of the device
@@ -429,7 +438,7 @@ router.delete('/name/:name', deleteDeviceByName);
  * @apiSuccess {String} data.status Status of the device
  * @apiSuccess {Number} data.__v Version of the device
  * @apiSuccess {String} data.settings Settings of the device
- * 
+ *
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
  * {
@@ -445,23 +454,23 @@ router.delete('/name/:name', deleteDeviceByName);
  * "__v": 0
  * }
  * }
- * 
+ *
  * @apiError (Error 404) NotFound Device not found
- * 
+ *
  * @apiErrorExample {json} Error-Response:
  * HTTP/1.1 404 Not Found
  * {
  * "message": "Device not found"
  * }
- * 
+ *
  * @apiError (Error 500) InternalServerError Server error
- * 
+ *
  * @apiErrorExample {json} Error-Response:
  * HTTP/1.1 500 Internal Server Error
  * {
  * "message": "Server error"
  * }
- * 
+ *
  */
 
 // Route to update a device by name

@@ -121,6 +121,22 @@ const getDevicesByClass = async (
   }
 };
 
+const getDeviceById = async (
+  req: Request<{id: string}>,
+  res: Response<Device | {message: string}>,
+  next: NextFunction
+) => {
+  try {
+    const {id} = req.params;
+    const device = await deviceModel
+      .findById(id)
+      .orFail(new Error('Device not found'));
+    res.json(device);
+  } catch (error) {
+    next(error);
+  }
+};
+
 /*********************POST requests**********************/
 
 // Function to add a new device
@@ -228,13 +244,96 @@ const updateDeviceByName = async (
   }
 };
 
+const updateDeviceById = async (
+  req: Request<{id: string}, {}, Device>,
+  res: Response<DBMessageResponse | {message: string}>,
+  next: NextFunction
+) => {
+  try {
+    const {id} = req.params;
+    console.log(req.body);
+    const updatedDevice = await deviceModel.findOneAndUpdate(
+      {_id: id},
+      req.body,
+      {new: true}
+    );
+    if (!updatedDevice) {
+      res.status(404).json({
+        message: 'Device not found',
+      });
+      return;
+    }
+    console.log(updatedDevice);
+    res.json({
+      message: 'Device updated successfully',
+      data: updatedDevice,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateDataField = async (
+  req: Request<
+    {id: string},
+    {},
+    {
+      data: {
+        humidity?: number;
+        temperature?: number;
+        pressure?: number;
+      };
+    }
+  >,
+  res: Response<DBMessageResponse | {message: string}>,
+  next: NextFunction
+) => {
+  try {
+    const {id} = req.params;
+    console.log(req.body);
+    console.log(req.body.data);
+    console.log(id);
+    const data = req.body.data;
+    const updatedDevice = await deviceModel.findOneAndUpdate(
+      {_id: id},
+      {
+        $set: {
+          data: {
+            humidity: data.humidity,
+            temperature: data.temperature,
+            pressure: data.pressure,
+          },
+          last_updated: new Date().toISOString(),
+        },
+      },
+      {new: true}
+    );
+    if (!updatedDevice) {
+      res.status(404).json({
+        message: 'Device not found',
+      });
+      return;
+    }
+    console.log(updatedDevice);
+    res.json({
+      message: 'Device data updated successfully',
+      data: updatedDevice,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export {
   getDevices,
   getDeviceByName,
   getDevicesByType,
   getDevicesByLocation,
   getDevicesByClass,
+  getDeviceById,
   addDevice,
   deleteDeviceByName,
   updateDeviceByName,
+  updateDeviceById,
+  updateDataField,
 };
