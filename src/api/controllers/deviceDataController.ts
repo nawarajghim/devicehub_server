@@ -29,9 +29,11 @@ const getDeviceData = async (
 ) => {
   try {
     const id = parseInt(req.params.deviceId);
-    const deviceData = await deviceDataModel.findOne({
-      deviceId: id,
-    }).select('-__v');
+    const deviceData = await deviceDataModel
+      .findOne({
+        deviceId: id,
+      })
+      .select('-__v');
     console.log(id, typeof id);
     if (!deviceData) {
       throw new CustomError('Device data not found', 404);

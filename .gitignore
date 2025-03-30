@@ -49,3 +49,5 @@ dist
 
 uploads/*
 !uploads/.gitkeep
+
+seed.sh
