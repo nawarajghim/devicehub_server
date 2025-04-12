@@ -2,6 +2,7 @@ import app from './app';
 import mongoConnect from './utils/db';
 import WebSocket from 'ws';
 import deviceModel from './api/models/deviceModel';
+import logger from './logger';
 
 const port = process.env.PORT || 3000;
 
@@ -12,15 +13,15 @@ const port = process.env.PORT || 3000;
       throw new Error('Database error');
     }
     const server = app.listen(port, () => {
-      console.log(`Listening: http://localhost:${port}`);
+      logger.info(`Listening: http://localhost:${port}`);
     });
 
     let wss: WebSocket.Server;
     try {
       wss = new WebSocket.Server({server});
-      console.log('WebSocket server initialized');
+      logger.info('WebSocket server initialized');
     } catch (error) {
-      console.error('WebSocket server error', (error as Error).message);
+      logger.error('WebSocket server error', (error as Error).message);
       return;
     }
 
@@ -82,4 +83,3 @@ const port = process.env.PORT || 3000;
     console.error('Server error', (error as Error).message);
   }
 })();
-
