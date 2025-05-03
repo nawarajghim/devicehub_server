@@ -11,6 +11,7 @@ import {
   updateDeviceById,
   getDeviceById,
   updateDataField,
+  newDeviceAlert,
 } from '../controllers/devicesController';
 
 const router = express.Router();
@@ -475,5 +476,8 @@ router.delete('/name/:name', deleteDeviceByName);
 
 // Route to update a device by name
 router.put('/name/:name', updateDeviceByName);
+
+// Route to notify new device
+router.post('/newDevice/:name', newDeviceAlert);
 
 export default router;

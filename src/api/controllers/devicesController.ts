@@ -3,6 +3,7 @@ import deviceModel from '../models/deviceModel';
 import {Device} from '../../types/Device';
 import {MessageResponse} from '../../types/MessageTypes';
 import CustomError from '../../classes/CustomError';
+import logger from '../../logger';
 
 // Define the response type for the database operations
 type DBMessageResponse = MessageResponse & {
@@ -290,9 +291,7 @@ const updateDataField = async (
 ) => {
   try {
     const {id} = req.params;
-    console.log(req.body);
-    console.log(req.body.data);
-    console.log(id);
+
     const data = req.body.data;
     const updatedDevice = await deviceModel.findOneAndUpdate(
       {_id: id},
@@ -324,6 +323,28 @@ const updateDataField = async (
   }
 };
 
+const newDeviceAlert = async (
+  req: Request<{name: string}>,
+  res: Response<Device | {message: string}>,
+  next: NextFunction
+) => {
+  try {
+    const {name} = req.params;
+    // make the name case insensitive
+    const device = await deviceModel.findOne({
+      name: {$regex: new RegExp(name, 'i')},
+    });
+    if (!device) {
+      logger.info(`New device found with name: ${name}`);
+      return res.json();
+      // 'sent notification to frontend using socket.io';
+    }
+    res.json(device);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export {
   getDevices,
   getDeviceByName,
@@ -336,4 +357,5 @@ export {
   updateDeviceByName,
   updateDeviceById,
   updateDataField,
+  newDeviceAlert,
 };
