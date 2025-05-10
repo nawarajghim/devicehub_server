@@ -1,5 +1,5 @@
 import {NextFunction, Request, Response} from 'express';
-import ruuviModel from '../models/ruuviModel';
+import ruuviModel from '../models/deviceDataDetailsModel';
 import {Ruuvi} from '../../types/Ruuvi';
 import {MessageResponse} from '../../types/MessageTypes';
 import CustomError from '../../classes/CustomError';
@@ -27,6 +27,7 @@ const postRuuviData = async (
   next: NextFunction
 ) => {
   try {
+    console.log(req.body);
     const ruuvi = new ruuviModel(req.body);
     const savedRuuvi = await ruuvi.save();
 

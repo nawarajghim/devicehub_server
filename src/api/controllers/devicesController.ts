@@ -4,6 +4,7 @@ import {Device} from '../../types/Device';
 import {MessageResponse} from '../../types/MessageTypes';
 import CustomError from '../../classes/CustomError';
 import logger from '../../logger';
+import {broadcast} from '../..';
 
 // Define the response type for the database operations
 type DBMessageResponse = MessageResponse & {
@@ -336,8 +337,11 @@ const newDeviceAlert = async (
     });
     if (!device) {
       logger.info(`New device found with name: ${name}`);
-      return res.json();
-      // 'sent notification to frontend using socket.io';
+      return broadcast({
+        event_type: 'new_device_alert_stream',
+        data: {device_name: name},
+        last_updated: new Date(),
+      });
     }
     res.json(device);
   } catch (error) {

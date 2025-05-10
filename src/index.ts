@@ -6,38 +6,12 @@ import logger from './logger';
 
 const port = process.env.PORT || 3000;
 
-(async () => {
+let wss: WebSocket.Server;
+
+export function initializeWebSocket(server: any) {
   try {
-    const db = await mongoConnect();
-    if (!db) {
-      throw new Error('Database error');
-    }
-    const server = app.listen(port, () => {
-      logger.info(`Listening: http://localhost:${port}`);
-    });
-
-    let wss: WebSocket.Server;
-    try {
-      wss = new WebSocket.Server({server});
-      logger.info('WebSocket server initialized');
-    } catch (error) {
-      logger.error('WebSocket server error', (error as Error).message);
-      return;
-    }
-
-    function broadcast(data: object) {
-      if (!wss) return;
-      console.log('Broadcasting data:', data);
-      wss.clients.forEach((client) => {
-        if (client.readyState === WebSocket.OPEN) {
-          try {
-            client.send(JSON.stringify(data));
-          } catch (error) {
-            console.error('Error broadcasting data', (error as Error).message);
-          }
-        }
-      });
-    }
+    wss = new WebSocket.Server({server});
+    logger.info('WebSocket server initialized');
 
     wss.on('connection', (ws) => {
       console.log('WebSocket client connected');
@@ -48,6 +22,37 @@ const port = process.env.PORT || 3000;
         console.error('WebSocket error', (error as Error).message);
       });
     });
+  } catch (error) {
+    logger.error('WebSocket server error', (error as Error).message);
+    throw error;
+  }
+}
+
+export function broadcast(data: object) {
+  if (!wss) return;
+  console.log('Broadcasting data:', data);
+  wss.clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      try {
+        client.send(JSON.stringify(data));
+      } catch (error) {
+        console.error('Error broadcasting data', (error as Error).message);
+      }
+    }
+  });
+}
+
+(async () => {
+  try {
+    const db = await mongoConnect();
+    if (!db) {
+      throw new Error('Database error');
+    }
+    const server = app.listen(port, () => {
+      logger.info(`Listening: http://localhost:${port}`);
+    });
+
+    initializeWebSocket(server);
 
     function startChangeStream() {
       const changeStream = deviceModel.collection.watch([], {
@@ -62,6 +67,7 @@ const port = process.env.PORT || 3000;
 
           if (wss && wss.clients.size > 0 && updatedData) {
             broadcast({
+              event_type: 'mongodb_change_stream',
               data: updatedData,
               last_updated: new Date(),
             });
@@ -76,7 +82,7 @@ const port = process.env.PORT || 3000;
       });
     }
 
-    startChangeStream();
+    //  startChangeStream();
 
     console.log('WebSocket server and MongoDB change stream initialized');
   } catch (error) {
