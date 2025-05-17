@@ -1,10 +1,11 @@
 import {NextFunction, Request, Response} from 'express';
 import deviceModel from '../models/deviceModel';
-import {Device} from '../../types/Device';
+import {DetectedDevice, Device} from '../../types/Device';
 import {MessageResponse} from '../../types/MessageTypes';
 import CustomError from '../../classes/CustomError';
 import logger from '../../logger';
 import {broadcast} from '../..';
+import {newDetectedDevices} from '../../lib/newDetectedDevices';
 
 // Define the response type for the database operations
 type DBMessageResponse = MessageResponse & {
@@ -324,6 +325,16 @@ const updateDataField = async (
   }
 };
 
+/**
+ * Handles the alert for a new device by checking if the device exists
+ * in the database. If the device does not exist, logs the event and
+ * broadcasts a new device alert, adding it to the detected devices list.
+ *
+ * @param req - The request object containing the device name as a parameter.
+ * @param res - The response object to return the device data if found.
+ * @param next - The next middleware function in the chain for error handling.
+ */
+
 const newDeviceAlert = async (
   req: Request<{name: string}>,
   res: Response<Device | {message: string}>,
@@ -337,14 +348,52 @@ const newDeviceAlert = async (
     });
     if (!device) {
       logger.info(`New device found with name: ${name}`);
-      return broadcast({
+      const detectedDevice = {
         event_type: 'new_device_alert_stream',
         data: {device_name: name},
         last_updated: new Date(),
+      };
+      if (!newDetectedDevices.some((d) => d.data.device_name === name)) {
+        newDetectedDevices.push(detectedDevice);
+      }
+      broadcast(detectedDevice);
+      return res.status(201).json({
+        message: 'New device alert broadcasted',
       });
     }
-    res.json(device);
+    if (device) {
+      res.json(device);
+    } else {
+      res.status(404).json({message: 'Device not found'});
+    }
   } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Returns a list of all detected devices that are not stored in the database
+ * yet. The list is filtered against the database devices to only include
+ * devices that have not been stored yet.
+ *
+ * @param req - The request object
+ * @param res - The response object
+ * @param next - The next function in the middleware chain
+ */
+const getDetectedDevices = async (
+  req: Request,
+  res: Response<DetectedDevice[] | {message: string}>,
+  next: NextFunction
+) => {
+  try {
+    const devices = await deviceModel.find();
+    const detectedDevices = newDetectedDevices.filter(
+      (device) => !devices.some((d) => d.name === device.data.device_name)
+    );
+
+    res.json(detectedDevices);
+  } catch (error) {
+    console.log(error);
     next(error);
   }
 };
@@ -362,4 +411,5 @@ export {
   updateDeviceById,
   updateDataField,
   newDeviceAlert,
+  getDetectedDevices,
 };

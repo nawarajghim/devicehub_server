@@ -12,6 +12,7 @@ import {
   getDeviceById,
   updateDataField,
   newDeviceAlert,
+  getDetectedDevices,
 } from '../controllers/devicesController';
 
 const router = express.Router();
@@ -479,5 +480,8 @@ router.put('/name/:name', updateDeviceByName);
 
 // Route to notify new device
 router.post('/newDevice/:name', newDeviceAlert);
+
+// Route to get new detected devices stored in local cache
+router.get('/detectedDevices/new', getDetectedDevices);
 
 export default router;
