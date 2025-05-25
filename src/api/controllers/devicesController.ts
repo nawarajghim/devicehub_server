@@ -152,13 +152,7 @@ const addDevice = async (
     const newDevice = new deviceModel(req.body);
     // new device's status is always 'active'
     newDevice.status = 'Active';
-    // name can only be one word, dash-separation is allowed
-    if (newDevice.name.split(' ').length > 1) {
-      throw new CustomError(
-        'Name should be one word, try dash-separation',
-        400
-      );
-    }
+
     // if first letter is lowercase, make it uppercase
     newDevice.name =
       newDevice.name.charAt(0).toUpperCase() + newDevice.name.slice(1);
@@ -213,14 +207,8 @@ const updateDeviceByName = async (
   try {
     const {name} = req.params;
     // if updating name, make sure it's one word
-    // name can only be one word, dash-separation is allowed
+
     if (req.body.name) {
-      if (req.body.name.split(' ').length > 1) {
-        throw new CustomError(
-          'Name should be one word, try dash-separation',
-          400
-        );
-      }
       // if first letter is lowercase, make it uppercase
       req.body.name =
         req.body.name.charAt(0).toUpperCase() + req.body.name.slice(1);
@@ -350,10 +338,10 @@ const newDeviceAlert = async (
       logger.info(`New device found with name: ${name}`);
       const detectedDevice = {
         event_type: 'new_device_alert_stream',
-        data: {device_name: name},
+        data: {name: name},
         last_updated: new Date(),
       };
-      if (!newDetectedDevices.some((d) => d.data.device_name === name)) {
+      if (!newDetectedDevices.some((d) => d.data.name === name)) {
         newDetectedDevices.push(detectedDevice);
       }
       broadcast(detectedDevice);
@@ -388,7 +376,7 @@ const getDetectedDevices = async (
   try {
     const devices = await deviceModel.find();
     const detectedDevices = newDetectedDevices.filter(
-      (device) => !devices.some((d) => d.name === device.data.device_name)
+      (device) => !devices.some((d) => d.name === device.data.name)
     );
 
     res.json(detectedDevices);
