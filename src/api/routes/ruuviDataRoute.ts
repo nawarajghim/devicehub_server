@@ -1,5 +1,9 @@
 import express from 'express';
-import {getRuuviData, postRuuviData} from '../controllers/ruuviController';
+import {
+  getRuuviData,
+  getRuuviDataById,
+  postRuuviData,
+} from '../controllers/ruuviController';
 
 const router = express.Router();
 
@@ -91,5 +95,7 @@ router
    *
    */
   .post('/', postRuuviData);
+
+router.get('/:deviceId', getRuuviDataById);
 
 export default router;
