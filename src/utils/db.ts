@@ -7,7 +7,11 @@ const mongoConnect = async () => {
     if (!process.env.DB_URL) {
       throw new Error('Database url not found in .env file');
     }
-    const connection = await mongoose.connect(process.env.DB_URL);
+    const connection = await mongoose.connect(process.env.DB_URL, {
+      dbName: process.env.MONGO_DB || 'devicehub', // explicitly use devicehub
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
     console.log('DB connected successfully');
     return connection;
   } catch (error) {
