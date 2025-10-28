@@ -63,7 +63,7 @@ const login = async (
     const admin = await adminModel
       .findOne({username})
       .select('password role username');
-
+    console.log('admin-login', admin);
     if (!admin) {
       return next(new Error('Invalid username or password'));
     }
