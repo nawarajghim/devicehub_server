@@ -60,10 +60,9 @@ const login = async (
     const {username, password} = req.body;
 
     // find the admin
-    const admins = await adminModel.find();
-
-    console.log('admin-login', admins);
-    const admin = admins.find((admin) => admin.username === username);
+    const admin = await adminModel
+      .findOne({username})
+      .select('password role username');
     if (!admin) {
       return next(new Error('Invalid username or password'));
     }

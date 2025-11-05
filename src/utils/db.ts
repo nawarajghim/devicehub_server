@@ -8,16 +8,9 @@ const mongoConnect = async () => {
       throw new Error('Database url not found in .env file');
     }
     const connection = await mongoose.connect(process.env.DB_URL, {
-      dbName: process.env.MONGO_DB || 'devicehub', // explicitly use devicehub
+      dbName: process.env.MONGO_DB || 'devicehub',
     });
-    mongoose.connection.once('open', () => {
-      console.log(
-        'Connected to MongoDB:',
-        mongoose.connection.host,
-        'DB:',
-        mongoose.connection.name
-      );
-    });
+
     console.log('DB connected successfully');
     return connection;
   } catch (error) {
